@@ -1,1 +1,0 @@
-deno run --watch --allow-read day-1-sonar-sweep.ts
