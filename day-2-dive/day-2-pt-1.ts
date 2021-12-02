@@ -23,7 +23,7 @@ console.log({ depth });
 console.log(-depth * horizontal);
 
 async function getData(): Promise<{ command: string; value: number }[]> {
-  let data = await Deno.readTextFile("day-2-pt-1-data.txt");
+  let data = await Deno.readTextFile("day-2-data.txt");
   data = '["' + data + '"]';
   data = data.replaceAll("\n", '","');
   const dataArray: string[] = JSON.parse(data);
