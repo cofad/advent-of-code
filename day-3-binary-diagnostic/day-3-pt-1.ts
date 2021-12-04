@@ -3,8 +3,6 @@ console.log({ bytes });
 
 const bitCounts: number[] = new Array(bytes[0].length).fill(0);
 
-console.log(bitCounts);
-
 bytes.forEach((byte) => {
   byte.split("").forEach((bit, j) => {
     parseInt(bit, 2) === 0 ? bitCounts[j]-- : bitCounts[j]++;
@@ -29,7 +27,7 @@ const epsilon = gamma
 console.log({ epsilon });
 
 const powerConsumption = parseInt(gamma, 2) * parseInt(epsilon, 2);
-console.log(powerConsumption);
+console.log({ powerConsumption });
 
 async function getData(): Promise<string[]> {
   let data = await Deno.readTextFile("day-3-data.txt");
