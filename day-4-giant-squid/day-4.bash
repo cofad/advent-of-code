@@ -1,0 +1,1 @@
+deno run --watch --allow-read day-4.ts
