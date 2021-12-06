@@ -11,51 +11,49 @@ console.log({ boards });
 
 let unmarkedValue;
 let firstWinnerScore;
-// let removedBoard;
+let lastWinnerScore;
+let removedBoard;
 
 for (let i = 0; i < drawOrder.length; i++) {
   updateBoards(drawOrder[i], boards);
   const rowWinner = getRowWinner(boards);
   const colWinner = getColWinner(boards);
 
-  if (rowWinner && rowWinner.winnerBoard && rowWinner.winnerIndex) {
-    // console.log({ rowWinner });
+  // Need to allow for multiple winners per round perhaps?
 
-    // if (!firstWinnerScore) {
-    unmarkedValue = calculateUnmarkedValue(rowWinner.winnerBoard);
-    console.log({ unmarkedValue });
-    firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
-    console.log({ firstWinnerScore });
-    // }
+  if (rowWinner && rowWinner.winnerBoard) {
+    if (!firstWinnerScore) {
+      unmarkedValue = calculateUnmarkedValue(rowWinner.winnerBoard);
+      console.log({ unmarkedValue });
+      firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
+      console.log({ firstWinnerScore });
+    }
 
-    // removedBoard = rowWinner;
-    // boards = removeBoard(rowWinner, boards);
-    break;
+    removedBoard = rowWinner;
+    boards = removeBoard(rowWinner, boards);
   }
 
-  if (colWinner && colWinner.winnerBoard && colWinner.winnerIndex) {
-    // console.log({ colWinner });
+  if (colWinner && colWinner.winnerBoard) {
+    if (!firstWinnerScore) {
+      unmarkedValue = calculateUnmarkedValue(colWinner.winnerBoard);
+      console.log({ unmarkedValue });
+      firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
+      console.log({ firstWinnerScore });
+    }
 
-    // if (!firstWinnerScore) {
-    unmarkedValue = calculateUnmarkedValue(colWinner.winnerBoard);
-    console.log({ unmarkedValue });
-    firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
-    console.log({ firstWinnerScore });
-
-    // }
-
-    // removedBoard = colWinner;
-    // boards = removeBoard(colWinner, boards);
-    break;
+    removedBoard = colWinner;
+    boards = removeBoard(colWinner, boards);
   }
 
-  // if (boards.length === 0 && removedBoard && removedBoard.winnerBoard) {
-  //   console.log({ removedBoard });
-  //   unmarkedValue = calculateUnmarkedValue(removedBoard.winnerBoard);
-  //   const lastWinnerScore = unmarkedValue * parseInt(drawOrder[0]);
-  //   console.log({ lastWinnerScore });
-  //   break;
-  // }
+  if (boards.length === 0 && removedBoard && removedBoard.winnerBoard) {
+    console.log({ removedBoard });
+    console.log(drawOrder[i]);
+    unmarkedValue = calculateUnmarkedValue(removedBoard.winnerBoard);
+    lastWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
+    console.log({ lastWinnerScore });
+    console.log("out of boards");
+    break;
+  }
 }
 
 async function getData(): Promise<string[]> {
@@ -84,7 +82,7 @@ function extractBoards(data: string[]): Boards {
     boards.push(tempData.splice(0, 5));
   }
 
-  console.log(boards);
+  // console.log(boards);
 
   const newBoards: Boards = [];
 
@@ -140,13 +138,13 @@ function getRowWinner(boards: Boards): {
       }
 
       if (rowWinner) {
+        winnerBoard = board;
+        winnerIndex = i;
         break;
       }
     }
 
     if (rowWinner) {
-      winnerBoard = board;
-      winnerIndex = i;
       break;
     }
   }
@@ -178,13 +176,13 @@ function getColWinner(boards: Boards): {
       }
 
       if (colWinner) {
+        winnerBoard = board;
+        winnerIndex = i;
         break;
       }
     }
 
     if (colWinner) {
-      winnerBoard = board;
-      winnerIndex = i;
       break;
     }
   }
@@ -206,14 +204,15 @@ function calculateUnmarkedValue(board: Board): number {
   return unmarkedValue;
 }
 
-// function removeBoard(
-//   board: { winnerBoard: Board | undefined; winnerIndex: number | undefined },
-//   boards: Boards
-// ): Boards {
-//   const newBoards = [...boards];
-//   if (board.winnerIndex) {
-//     newBoards.splice(board.winnerIndex, 1);
-//   }
+function removeBoard(
+  board: { winnerBoard: Board | undefined; winnerIndex: number | undefined },
+  boards: Boards
+): Boards {
+  const newBoards = [...boards];
 
-//   return newBoards;
-// }
+  if (board.winnerIndex !== undefined) {
+    newBoards.splice(board.winnerIndex, 1);
+  }
+
+  return newBoards;
+}
