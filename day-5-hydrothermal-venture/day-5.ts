@@ -2,30 +2,13 @@ type Line = { x1: number; y1: number; x2: number; y2: number };
 type Grid = number[][];
 
 const lines = await getLines();
-console.log(lines);
-
-const grid: Grid = [];
-
-for (let y = 0; y < 10; y++) {
-  const row = [];
-
-  for (let x = 0; x < 10; x++) {
-    row.push(0);
-  }
-
-  grid.push(row);
-}
-
-lines.forEach((line) => {
-  if (isHorizontalOrVertical(line)) {
-    plotLine(line, grid);
-  }
-});
-
-printGrid(grid);
+let grid = generateGrid();
+grid = addLinesToGrid(lines, grid);
+const overlaps = calculateOverlaps(grid);
+console.log({ overlaps });
 
 async function getLines(): Promise<Line[]> {
-  let fileText = await Deno.readTextFile("day-5-data-example.txt");
+  let fileText = await Deno.readTextFile("day-5-data.txt");
   fileText = '["' + fileText + '"]';
   fileText = fileText.replaceAll("\n", '","');
   const dataArray: string[] = JSON.parse(fileText);
@@ -48,6 +31,22 @@ async function getLines(): Promise<Line[]> {
   return newNewDataArray;
 }
 
+function generateGrid(): Grid {
+  const grid: Grid = [];
+
+  for (let y = 0; y < 1000; y++) {
+    const row = [];
+  
+    for (let x = 0; x < 1000; x++) {
+      row.push(0);
+    }
+  
+    grid.push(row);
+  }
+
+  return grid;
+}
+
 function isHorizontalOrVertical(line: Line): boolean {
   return isHorizontal(line) || isVertical(line);
 }
@@ -60,23 +59,33 @@ function isVertical(line: Line): boolean {
   return line.x1 === line.x2;
 }
 
-function plotLine(line: Line, grid: number[][]): void {
-  console.log(line);
+function addLinesToGrid(lines: Line[], grid: Grid): Grid {
+  const updatedGrid = [...grid];
 
+  lines.forEach((line) => {
+    if (isHorizontalOrVertical(line)) {
+      addLineToGrid(line, updatedGrid);
+    }
+  });
+
+  return updatedGrid;
+}
+
+function addLineToGrid(line: Line, grid: number[][]): void {
   if (isHorizontal(line)) {
-    const delta = Math.abs(line.x2 - line.x1);
-    const start = line.x1 < line.x2 ? line.x1 : line.y2;
+    const start = line.x1 < line.x2 ? line.x1 : line.x2;
+    const end = Math.abs(line.x2 - line.x1) + start;
     const y = line.y1;
 
-    for (let x = start; x <= delta; x++) {
+    for (let x = start; x <= end; x++) {
       grid[y][x] += 1;
     }
   } else if (isVertical(line)) {
-    const delta = Math.abs(line.y2 - line.y1);
     const start = line.y1 < line.y2 ? line.y1 : line.y2;
+    const end = Math.abs(line.y2 - line.y1) + start;
     const x = line.x1;
 
-    for (let y = start; y <= delta; y++) {
+    for (let y = start; y <= end; y++) {
       grid[y][x] += 1;
     }
   }
@@ -92,4 +101,16 @@ function printGrid(grid: number[][]): void {
 
     console.log(rowText);
   });
+}
+
+function calculateOverlaps(grid: Grid): number {
+  let overlaps = 0;
+
+  grid.forEach(row => {
+    row.forEach(value => {
+      if (value >= 2) overlaps++;
+    });
+  });
+
+  return overlaps;
 }
