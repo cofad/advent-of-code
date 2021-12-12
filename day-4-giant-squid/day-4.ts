@@ -16,43 +16,48 @@ let removedBoard;
 
 for (let i = 0; i < drawOrder.length; i++) {
   updateBoards(drawOrder[i], boards);
-  const rowWinner = getRowWinner(boards);
-  const colWinner = getColWinner(boards);
+  let rowWinner = getRowWinner(boards);
+  let colWinner = getColWinner(boards);
 
-  // Need to allow for multiple winners per round perhaps?
+  while (rowWinner.winnerBoard || colWinner.winnerBoard) {
+    // Need to allow for multiple winners per round perhaps?
 
-  if (rowWinner && rowWinner.winnerBoard) {
-    if (!firstWinnerScore) {
-      unmarkedValue = calculateUnmarkedValue(rowWinner.winnerBoard);
-      console.log({ unmarkedValue });
-      firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
-      console.log({ firstWinnerScore });
+    if (rowWinner && rowWinner.winnerBoard) {
+      if (!firstWinnerScore) {
+        unmarkedValue = calculateUnmarkedValue(rowWinner.winnerBoard);
+        console.log({ unmarkedValue });
+        firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
+        console.log({ firstWinnerScore });
+      }
+
+      removedBoard = rowWinner;
+      boards = removeBoard(rowWinner, boards);
     }
 
-    removedBoard = rowWinner;
-    boards = removeBoard(rowWinner, boards);
-  }
+    if (colWinner && colWinner.winnerBoard) {
+      if (!firstWinnerScore) {
+        unmarkedValue = calculateUnmarkedValue(colWinner.winnerBoard);
+        console.log({ unmarkedValue });
+        firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
+        console.log({ firstWinnerScore });
+      }
 
-  if (colWinner && colWinner.winnerBoard) {
-    if (!firstWinnerScore) {
-      unmarkedValue = calculateUnmarkedValue(colWinner.winnerBoard);
-      console.log({ unmarkedValue });
-      firstWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
-      console.log({ firstWinnerScore });
+      removedBoard = colWinner;
+      boards = removeBoard(colWinner, boards);
     }
 
-    removedBoard = colWinner;
-    boards = removeBoard(colWinner, boards);
-  }
+    if (boards.length === 0 && removedBoard && removedBoard.winnerBoard) {
+      console.log({ removedBoard });
+      console.log(drawOrder[i]);
+      unmarkedValue = calculateUnmarkedValue(removedBoard.winnerBoard);
+      lastWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
+      console.log({ lastWinnerScore });
+      console.log("out of boards");
+      break;
+    }
 
-  if (boards.length === 0 && removedBoard && removedBoard.winnerBoard) {
-    console.log({ removedBoard });
-    console.log(drawOrder[i]);
-    unmarkedValue = calculateUnmarkedValue(removedBoard.winnerBoard);
-    lastWinnerScore = unmarkedValue * parseInt(drawOrder[i]);
-    console.log({ lastWinnerScore });
-    console.log("out of boards");
-    break;
+    rowWinner = getRowWinner(boards);
+    colWinner = getColWinner(boards);
   }
 }
 
