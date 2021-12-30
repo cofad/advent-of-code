@@ -1,6 +1,4 @@
+import { calculateNumLanternfish, FILE_NAME } from "./lib.ts";
 
-const FILE_NAME = "day-6-data.txt";
-const FILE_NAME_EXAMPLE = "day-6-data-example.txt";
-
-const lanternfish = await partOne(FILE_NAME_EXAMPLE);
-console.log(lanternfish);
+const numLanternfish = await calculateNumLanternfish(FILE_NAME, 80);
+console.log("\n\nPart One: Num Lanternfish = " + numLanternfish + "\n\n");
