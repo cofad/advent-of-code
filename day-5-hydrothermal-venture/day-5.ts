@@ -1,14 +1,33 @@
 type Line = { x1: number; y1: number; x2: number; y2: number };
 type Grid = number[][];
 
-const lines = await getLines();
-let grid = generateGrid();
-grid = addLinesToGrid(lines, grid);
-const overlaps = calculateOverlaps(grid);
-console.log({ overlaps });
+const EXAMPLE_FILE_NAME = "day-5-data-example.txt";
+const FILE_NAME = "day-5-data.txt";
 
-async function getLines(): Promise<Line[]> {
-  let fileText = await Deno.readTextFile("day-5-data.txt");
+console.log(await partOne(EXAMPLE_FILE_NAME));
+console.log(await partTwo(EXAMPLE_FILE_NAME));
+
+console.log(await partOne(FILE_NAME));
+console.log(await partTwo(FILE_NAME));
+
+export async function partOne(fileName: string): Promise<number> {
+  const lines = await getLines(fileName);
+  let gridPartOne = generateBlankGrid();
+  gridPartOne = addHorizontalAndVerticalLinesToGrid(lines, gridPartOne);
+  const overlapsPartOne = calculateOverlaps(gridPartOne);
+  return overlapsPartOne;
+}
+
+export async function partTwo(fileName: string): Promise<number> {
+  const lines = await getLines(fileName);
+  let gridPartTwo = generateBlankGrid();
+  gridPartTwo = addLinesToGrid(lines, gridPartTwo);
+  const overlapsPartTwo = calculateOverlaps(gridPartTwo);
+  return overlapsPartTwo;
+}
+
+async function getLines(fileName: string): Promise<Line[]> {
+  let fileText = await Deno.readTextFile(fileName);
   fileText = '["' + fileText + '"]';
   fileText = fileText.replaceAll("\n", '","');
   const dataArray: string[] = JSON.parse(fileText);
@@ -31,16 +50,16 @@ async function getLines(): Promise<Line[]> {
   return newNewDataArray;
 }
 
-function generateGrid(): Grid {
+function generateBlankGrid(): Grid {
   const grid: Grid = [];
 
   for (let y = 0; y < 1000; y++) {
     const row = [];
-  
+
     for (let x = 0; x < 1000; x++) {
       row.push(0);
     }
-  
+
     grid.push(row);
   }
 
@@ -59,13 +78,23 @@ function isVertical(line: Line): boolean {
   return line.x1 === line.x2;
 }
 
-function addLinesToGrid(lines: Line[], grid: Grid): Grid {
+function addHorizontalAndVerticalLinesToGrid(lines: Line[], grid: Grid): Grid {
   const updatedGrid = [...grid];
 
   lines.forEach((line) => {
     if (isHorizontalOrVertical(line)) {
       addLineToGrid(line, updatedGrid);
     }
+  });
+
+  return updatedGrid;
+}
+
+function addLinesToGrid(lines: Line[], grid: Grid): Grid {
+  const updatedGrid = [...grid];
+
+  lines.forEach((line) => {
+    addLineToGrid(line, updatedGrid);
   });
 
   return updatedGrid;
@@ -88,6 +117,18 @@ function addLineToGrid(line: Line, grid: number[][]): void {
     for (let y = start; y <= end; y++) {
       grid[y][x] += 1;
     }
+  } else {
+    const length = Math.abs(line.x2 - line.x1);
+    const xDir = Math.sign(line.x2 - line.x1);
+    const yDir = Math.sign(line.y2 - line.y1);
+    let x = line.x1;
+    let y = line.y1;
+
+    for (let i = 0; i <= length; i++) {
+      grid[y][x] += 1;
+      x += xDir;
+      y += yDir;
+    }
   }
 }
 
@@ -106,8 +147,8 @@ function printGrid(grid: number[][]): void {
 function calculateOverlaps(grid: Grid): number {
   let overlaps = 0;
 
-  grid.forEach(row => {
-    row.forEach(value => {
+  grid.forEach((row) => {
+    row.forEach((value) => {
       if (value >= 2) overlaps++;
     });
   });
