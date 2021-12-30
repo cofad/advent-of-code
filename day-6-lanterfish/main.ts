@@ -1,4 +1,9 @@
 import { calculateNumLanternfish, FILE_NAME } from "./lib.ts";
 
-const numLanternfish = await calculateNumLanternfish(FILE_NAME, 80);
-console.log("\n\nPart One: Num Lanternfish = " + numLanternfish + "\n\n");
+const numLanternfishPartTwo = await calculateNumLanternfish(FILE_NAME, 256);
+const numLanternfishPartOne = await calculateNumLanternfish(FILE_NAME, 80);
+
+console.log("");
+console.log("Part One: Num Lanternfish = " + numLanternfishPartOne);
+console.log("Part Two: Num Lanternfish = " + numLanternfishPartTwo);
+console.log("");
