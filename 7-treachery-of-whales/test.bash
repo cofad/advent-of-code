@@ -1,0 +1,1 @@
+deno test --watch --allow-read test.ts
