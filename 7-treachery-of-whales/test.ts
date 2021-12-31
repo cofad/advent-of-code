@@ -6,14 +6,14 @@ import {
   readInCrabPositions,
 } from "./lib.ts";
 
-Deno.test("Part One Example Should Pass", async (): Promise<void> => {
-  const crabPositions = await readInCrabPositions(FILE_NAME_EXAMPLE);
-  const minFuel = await calculateMinFuelForAlignment(crabPositions);
-  assertEquals(minFuel, 0);
+Deno.test("Part One Example Should Pass", () => {
+  const crabPositions = readInCrabPositions(FILE_NAME_EXAMPLE);
+  const minFuel = calculateMinFuelForAlignment(crabPositions);
+  assertEquals(minFuel, 37);
 });
 
-Deno.test("Part One Should Pass", async (): Promise<void> => {
-  const crabPositions = await readInCrabPositions(FILE_NAME);
-  const minFuel = await calculateMinFuelForAlignment(crabPositions);
-  assertEquals(minFuel, 0);
+Deno.test("Part One Should Pass", () => {
+  const crabPositions = readInCrabPositions(FILE_NAME);
+  const minFuel = calculateMinFuelForAlignment(crabPositions);
+  assertEquals(minFuel, 340987);
 });
