@@ -14,16 +14,14 @@ export function readInCrabPositions(
 export function calculateMinFuelForAlignment(
   crabPositions: CrabPositions,
 ): number {
-  const minPosition = getMinArrayValue(crabPositions);
-  const maxPosition = getMaxArrayValue(crabPositions);
+  const optimalPositions = calculateOptimalPositions(crabPositions);
 
-  const lowestFuelCost = Array(maxPosition - minPosition)
-    .fill(0)
-    .map((_value, i) => minPosition + i)
-    .map((position) => calculateFuelCost(crabPositions, position))
-    .reduce((a, b) => b < a ? b : a);
+  const minFuelCost = Math.max(
+    calculateFuelCost(crabPositions, optimalPositions[0]),
+    calculateFuelCost(crabPositions, optimalPositions[1]),
+  );
 
-  return lowestFuelCost;
+  return minFuelCost;
 }
 
 function calculateFuelCost(positions: CrabPositions, number: number): number {
@@ -33,10 +31,17 @@ function calculateFuelCost(positions: CrabPositions, number: number): number {
   }, 0);
 }
 
-function getMinArrayValue(array: number[]): number {
-  return array.reduce((a, b) => b < a ? b : a);
+function calculateOptimalPositions(array: number[]): number[] {
+  return calculateMedians(array);
 }
 
-function getMaxArrayValue(array: number[]): number {
-  return array.reduce((a, b) => b > a ? b : a);
+function calculateMedians(array: number[]): number[] {
+  const sortedArray = [...array].sort((a, b) => a - b);
+
+  const medianIndexes = [
+    Math.floor(array.length / 2),
+    Math.ceil(array.length / 2),
+  ];
+
+  return [sortedArray[medianIndexes[0]], sortedArray[medianIndexes[1]]];
 }
