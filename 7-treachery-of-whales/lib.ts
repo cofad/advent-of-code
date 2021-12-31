@@ -3,30 +3,58 @@ export const FILE_NAME_EXAMPLE = "data-example.txt";
 
 type CrabPositions = number[];
 
-export function readInCrabPositions(
-  fileName: string,
-): CrabPositions {
+export function readInCrabPositions(fileName: string): CrabPositions {
   let fileText = Deno.readTextFileSync(fileName);
   fileText = "[" + fileText + "]";
   return JSON.parse(fileText);
 }
 
-export function calculateMinFuelForAlignment(
-  crabPositions: CrabPositions,
+export function calculateMinFuelForAlignmentWithConstantFuelUsage(
+  crabPositions: CrabPositions
 ): number {
   const optimalPositions = calculateOptimalPositions(crabPositions);
 
   const minFuelCost = Math.max(
-    calculateFuelCost(crabPositions, optimalPositions[0]),
-    calculateFuelCost(crabPositions, optimalPositions[1]),
+    calculateFuelCostWithConstantUsage(crabPositions, optimalPositions[0]),
+    calculateFuelCostWithConstantUsage(crabPositions, optimalPositions[1])
   );
 
   return minFuelCost;
 }
 
-function calculateFuelCost(positions: CrabPositions, number: number): number {
+export function calculateMinFuelForAlignmentWithVariableFuelUsage(
+  crabPositions: CrabPositions
+): number {
+  const minPosition = getMinArrayValue(crabPositions);
+  const maxPosition = getMaxArrayValue(crabPositions);
+
+  const lowestFuelCost = Array(maxPosition - minPosition)
+    .fill(0)
+    .map((_value, i) => minPosition + i)
+    .map((position) =>
+      calculateFuelCostWithVariableUsage(crabPositions, position)
+    )
+    .reduce((a, b) => (b < a ? b : a));
+
+  return lowestFuelCost;
+}
+
+function calculateFuelCostWithConstantUsage(
+  positions: CrabPositions,
+  targetPosition: number
+): number {
   return positions.reduce((totalCost, position) => {
-    totalCost += Math.abs(position - number);
+    totalCost += Math.abs(position - targetPosition);
+    return totalCost;
+  }, 0);
+}
+
+function calculateFuelCostWithVariableUsage(
+  positions: CrabPositions,
+  targetPosition: number
+): number {
+  return positions.reduce((totalCost, position) => {
+    totalCost += sumOfNumbers(Math.abs(position - targetPosition));
     return totalCost;
   }, 0);
 }
@@ -44,4 +72,16 @@ function calculateMedians(array: number[]): number[] {
   ];
 
   return [sortedArray[medianIndexes[0]], sortedArray[medianIndexes[1]]];
+}
+
+function sumOfNumbers(n: number): number {
+  return (n * (n + 1)) / 2;
+}
+
+function getMinArrayValue(array: number[]): number {
+  return array.reduce((a, b) => (b < a ? b : a));
+}
+
+function getMaxArrayValue(array: number[]): number {
+  return array.reduce((a, b) => (b > a ? b : a));
 }
