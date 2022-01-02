@@ -3,5 +3,10 @@
   "deno.lint": true,
   "deno.unstable": true,
   "cSpell.words": ["lanternfish"],
-  "editor.defaultFormatter": "denoland.vscode-deno"
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
 }
