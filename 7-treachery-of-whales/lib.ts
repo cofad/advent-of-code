@@ -25,18 +25,15 @@ export function calculateMinFuelForAlignmentWithConstantFuelUsage(
 export function calculateMinFuelForAlignmentWithVariableFuelUsage(
   crabPositions: CrabPositions
 ): number {
-  const minPosition = getMinArrayValue(crabPositions);
-  const maxPosition = getMaxArrayValue(crabPositions);
+  const median = crabPositions.reduce((a, b) => a + b) / crabPositions.length;
 
-  const lowestFuelCost = Array(maxPosition - minPosition)
-    .fill(0)
-    .map((_value, i) => minPosition + i)
-    .map((position) =>
-      calculateFuelCostWithVariableUsage(crabPositions, position)
-    )
-    .reduce((a, b) => (b < a ? b : a));
+  const lowerMedian = Math.floor(median);
+  const upperMedian = Math.ceil(median);
 
-  return lowestFuelCost;
+  return Math.min(
+    calculateFuelCostWithVariableUsage(crabPositions, lowerMedian),
+    calculateFuelCostWithVariableUsage(crabPositions, upperMedian)
+  );
 }
 
 function calculateFuelCostWithConstantUsage(
