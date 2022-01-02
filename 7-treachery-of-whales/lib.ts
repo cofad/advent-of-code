@@ -12,11 +12,11 @@ export function readInCrabPositions(fileName: string): CrabPositions {
 export function calculateMinFuelForAlignmentWithConstantFuelUsage(
   crabPositions: CrabPositions
 ): number {
-  const means = calculateMedians(crabPositions);
+  const medians = calculateMedians(crabPositions);
 
   const minFuelCost = Math.max(
-    calculateFuelCostWithConstantUsage(crabPositions, means[0]),
-    calculateFuelCostWithConstantUsage(crabPositions, means[1])
+    calculateFuelCostWithConstantUsage(crabPositions, medians[0]),
+    calculateFuelCostWithConstantUsage(crabPositions, medians[1])
   );
 
   return minFuelCost;
@@ -72,5 +72,5 @@ function sumOfNumbers(n: number): number {
 }
 
 function calculateMean(array: number[]): number {
-  return array.reduce((a, b) => a + b) / crabPositions.length;
+  return array.reduce((a, b) => a + b) / array.length;
 }
