@@ -12,11 +12,11 @@ export function readInCrabPositions(fileName: string): CrabPositions {
 export function calculateMinFuelForAlignmentWithConstantFuelUsage(
   crabPositions: CrabPositions
 ): number {
-  const optimalPositions = calculateOptimalPositions(crabPositions);
+  const means = calculateMedians(crabPositions);
 
   const minFuelCost = Math.max(
-    calculateFuelCostWithConstantUsage(crabPositions, optimalPositions[0]),
-    calculateFuelCostWithConstantUsage(crabPositions, optimalPositions[1])
+    calculateFuelCostWithConstantUsage(crabPositions, means[0]),
+    calculateFuelCostWithConstantUsage(crabPositions, means[1])
   );
 
   return minFuelCost;
@@ -25,14 +25,14 @@ export function calculateMinFuelForAlignmentWithConstantFuelUsage(
 export function calculateMinFuelForAlignmentWithVariableFuelUsage(
   crabPositions: CrabPositions
 ): number {
-  const median = crabPositions.reduce((a, b) => a + b) / crabPositions.length;
+  const mean = calculateMean(crabPositions);
 
-  const lowerMedian = Math.floor(median);
-  const upperMedian = Math.ceil(median);
+  const lowerMean = Math.floor(mean);
+  const upperMean = Math.ceil(mean);
 
   return Math.min(
-    calculateFuelCostWithVariableUsage(crabPositions, lowerMedian),
-    calculateFuelCostWithVariableUsage(crabPositions, upperMedian)
+    calculateFuelCostWithVariableUsage(crabPositions, lowerMean),
+    calculateFuelCostWithVariableUsage(crabPositions, upperMean)
   );
 }
 
@@ -56,10 +56,6 @@ function calculateFuelCostWithVariableUsage(
   }, 0);
 }
 
-function calculateOptimalPositions(array: number[]): number[] {
-  return calculateMedians(array);
-}
-
 function calculateMedians(array: number[]): number[] {
   const sortedArray = [...array].sort((a, b) => a - b);
 
@@ -75,10 +71,6 @@ function sumOfNumbers(n: number): number {
   return (n * (n + 1)) / 2;
 }
 
-function getMinArrayValue(array: number[]): number {
-  return array.reduce((a, b) => (b < a ? b : a));
-}
-
-function getMaxArrayValue(array: number[]): number {
-  return array.reduce((a, b) => (b > a ? b : a));
+function calculateMean(array: number[]): number {
+  return array.reduce((a, b) => a + b) / crabPositions.length;
 }
