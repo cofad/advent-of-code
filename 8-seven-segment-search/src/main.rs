@@ -2,7 +2,8 @@ mod lib;
 
 fn main() {
     let displays = lib::read_in_displays(lib::FILE_NAME);
-    let digit_count_part_one = lib::calculate_digit_count_of_1_4_7_8(displays);
+    let digit_count_part_one = lib::calculate_digit_count_of_1_4_7_8(&displays);
+    let part_two = lib::part_two(&displays);
 
     println!("");
     println!(
