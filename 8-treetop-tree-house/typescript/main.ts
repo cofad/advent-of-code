@@ -28,9 +28,6 @@ function partOne(filename: string): number {
       row.map((tree, colIndex) => toTree(tree, rowIndex, colIndex))
     )
     .map((row, _index, rawTrees) =>
-      row.map((tree) => updateExteriorTreeVisibility(tree, rawTrees))
-    )
-    .map((row, _index, rawTrees) =>
       row.map((tree) => updateTreeVisibility(tree, rawTrees))
     );
 
@@ -65,58 +62,35 @@ function isExteriorTree(tree: Tree, trees: Tree[][]): boolean {
   );
 }
 
-function updateExteriorTreeVisibility(tree: Tree, trees: Tree[][]): Tree {
-  return { ...tree, isVisible: isExteriorTree(tree, trees) };
+function updateTreeVisibility(tree: Tree, trees: Tree[][]): Tree {
+  return {
+    ...tree,
+    isVisible: isExteriorTree(tree, trees) || calculateVisibility(tree, trees),
+  };
 }
 
-function updateTreeVisibility(tree: Tree, trees: Tree[][]): Tree {
-  if (isExteriorTree(tree, trees)) {
-    return tree;
-  } else {
-    return { ...tree, isVisible: calculateVisibility(tree, trees) };
-  }
+function flatOne<T>(array: T[][]) {
+  let flattened: T[] = [];
+  array.forEach((x) => (flattened = flattened.concat(x)));
+  return flattened;
 }
 
 function calculateVisibility(tree: Tree, trees: Tree[][]): boolean {
-  return (
-    calculateIsVisibleDirection(tree, trees, "up") ||
-    calculateIsVisibleDirection(tree, trees, "right") ||
-    calculateIsVisibleDirection(tree, trees, "bottom") ||
-    calculateIsVisibleDirection(tree, trees, "left")
-  );
-}
+  const row = trees[tree.row];
+  const col = flatOne(trees).filter((x) => x.col === tree.col);
 
-function calculateIsVisibleDirection(
-  tree: Tree,
-  trees: Tree[][],
-  direction: "up" | "right" | "bottom" | "left"
-): boolean {
-  const directions = {
-    up: {
-      isAligned: (neighborTree: Tree) => neighborTree.col === tree.col,
-      isBehind: (neighborTree: Tree) => neighborTree.row <= tree.row,
-    },
-    right: {
-      isAligned: (neighborTree: Tree) => neighborTree.row === tree.row,
-      isBehind: (neighborTree: Tree) => neighborTree.col <= tree.col,
-    },
-    bottom: {
-      isAligned: (neighborTree: Tree) => neighborTree.col === tree.col,
-      isBehind: (neighborTree: Tree) => neighborTree.row >= tree.row,
-    },
-    left: {
-      isAligned: (neighborTree: Tree) => neighborTree.row === tree.row,
-      isBehind: (neighborTree: Tree) => neighborTree.col >= tree.col,
-    },
-  };
+  const upTrees = col.slice(0, tree.row);
+  const downTrees = col.slice(tree.row + 1);
+  const leftTrees = row.slice(0, tree.col);
+  const rightTrees = row.slice(tree.col + 1);
 
-  const blockingTrees = trees
-    .flat(1)
-    .filter((neighborTree) => directions[direction].isAligned(neighborTree))
-    .filter((neighborTree) => !directions[direction].isBehind(neighborTree))
-    .filter((neighborTree) => neighborTree.height >= tree.height);
+  const isVisible =
+    upTrees.filter((x) => x.height >= tree.height).length === 0 ||
+    downTrees.filter((x) => x.height >= tree.height).length === 0 ||
+    leftTrees.filter((x) => x.height >= tree.height).length === 0 ||
+    rightTrees.filter((x) => x.height >= tree.height).length === 0;
 
-  return blockingTrees.length === 0;
+  return isVisible;
 }
 
 Deno.test(function shouldPassPartOneExample() {
