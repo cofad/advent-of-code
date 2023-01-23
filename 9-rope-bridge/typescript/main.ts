@@ -1,7 +1,7 @@
 import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
 
 const DATA_FILE_NAME_EXAMPLE = "data-example.txt";
-const DATA_FILE_NAME_EXAMPLE_PT2 = "data-example-pt2.txt";
+const DATA_FILE_NAME_EXAMPLE_PART_2 = "data-example-pt2.txt";
 const DATA_FILE_NAME = "data.txt";
 
 type Move = {
@@ -17,17 +17,32 @@ type Position = {
 main();
 
 function main(): void {
-  console.log("Part One Example:", partOne(DATA_FILE_NAME_EXAMPLE));
-  console.log("Part One        :", partOne(DATA_FILE_NAME));
-  console.log("Part Two Example:", partTwo(DATA_FILE_NAME_EXAMPLE));
-  console.log("Part Two Example:", partTwo(DATA_FILE_NAME_EXAMPLE_PT2));
-  console.log("Part Two        :", partTwo(DATA_FILE_NAME));
+  console.log("Part One Example       :", partOne(DATA_FILE_NAME_EXAMPLE, 2));
+  console.log("Part One               :", partOne(DATA_FILE_NAME, 2));
+  console.log("Part Two Example       :", partTwo(DATA_FILE_NAME_EXAMPLE, 10));
+  console.log(
+    "Part Two Example Part 2:",
+    partTwo(DATA_FILE_NAME_EXAMPLE_PART_2, 10)
+  );
+  console.log("Part Two               :", partTwo(DATA_FILE_NAME, 10));
 }
 
-function partOne(filename: string): number {
+function partOne(filename: string, ropeLength: number): number {
   const moves = parseFileToMoves(Deno.readTextFileSync(filename));
+  return getTailPositionAfterAllMoves(moves, ropeLength);
+}
+
+function partTwo(filename: string, ropeLength: number): number {
+  const moves = parseFileToMoves(Deno.readTextFileSync(filename));
+  return getTailPositionAfterAllMoves(moves, ropeLength);
+}
+
+function getTailPositionAfterAllMoves(
+  moves: Move[],
+  ropeLength: number
+): number {
   const tailPositions = new Set<string>();
-  const rope = createRope(2);
+  const rope = createRope(ropeLength);
   const head = rope[0];
 
   // _logBoard(rope);
@@ -40,10 +55,11 @@ function partOne(filename: string): number {
       if (position === head) return;
 
       const prevPosition = rope[index - 1];
-      rope[index] = calculationPosition(prevPosition, position);
+      const newPosition = calculationPosition(prevPosition, position);
+      rope[index] = newPosition;
 
       if (index === rope.length - 1) {
-        tailPositions.add(JSON.stringify(position));
+        tailPositions.add(JSON.stringify(newPosition));
       }
     });
 
@@ -82,17 +98,22 @@ function createRope(length: number): Position[] {
 }
 
 function calculationPosition(
-  headPosition: Position,
-  tailPosition: Position
+  prevPosition: Position,
+  position: Position
 ): Position {
-  const dx = headPosition.x - tailPosition.x;
-  const dy = headPosition.y - tailPosition.y;
+  const dx = prevPosition.x - position.x;
+  const dy = prevPosition.y - position.y;
   let newTailPosition = {
-    x: tailPosition.x,
-    y: tailPosition.y,
+    x: position.x,
+    y: position.y,
   };
 
-  if (Math.abs(dx) === 2 && Math.abs(dy) === 1) {
+  if (Math.abs(dx) === 2 && Math.abs(dy) === 2) {
+    newTailPosition = {
+      x: newTailPosition.x + Math.sign(dx) * 1,
+      y: newTailPosition.y + Math.sign(dy) * 1,
+    };
+  } else if (Math.abs(dx) === 2 && Math.abs(dy) === 1) {
     newTailPosition = {
       x: newTailPosition.x + Math.sign(dx) * 1,
       y: newTailPosition.y + Math.sign(dy) * 1,
@@ -136,28 +157,22 @@ function parseFileToMoves(fileString: string): Move[] {
     });
 }
 
-function partTwo(filename: string): number {
-  const moves = parseFileToMoves(Deno.readTextFileSync(filename));
-
-  return 0;
-}
-
 Deno.test(function shouldPassPartOneExample() {
-  assertEquals(partOne(DATA_FILE_NAME_EXAMPLE), 13);
+  assertEquals(partOne(DATA_FILE_NAME_EXAMPLE, 2), 13);
 });
 
 Deno.test(function shouldPassPartOne() {
-  assertEquals(partOne(DATA_FILE_NAME), 6023);
+  assertEquals(partOne(DATA_FILE_NAME, 2), 6023);
 });
 
 Deno.test(function shouldPassPartTwoExample() {
-  assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE), 0);
+  assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE, 10), 1);
 });
 
 Deno.test(function shouldPassPartTwoExampleTwo() {
-  assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE_PT2), 36);
+  assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE_PART_2, 10), 36);
 });
 
 Deno.test(function shouldPassPartTwo() {
-  assertEquals(partTwo(DATA_FILE_NAME), null);
+  assertEquals(partTwo(DATA_FILE_NAME, 10), 2533);
 });
