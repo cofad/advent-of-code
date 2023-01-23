@@ -1,6 +1,7 @@
 import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
 
 const DATA_FILE_NAME_EXAMPLE = "data-example.txt";
+const DATA_FILE_NAME_EXAMPLE_PT2 = "data-example-pt2.txt";
 const DATA_FILE_NAME = "data.txt";
 
 type Move = {
@@ -18,8 +19,9 @@ main();
 function main(): void {
   console.log("Part One Example:", partOne(DATA_FILE_NAME_EXAMPLE));
   console.log("Part One        :", partOne(DATA_FILE_NAME));
-  // console.log("Part Two Example:", partTwo(DATA_FILE_NAME_EXAMPLE));
-  // console.log("Part Two        :", partTwo(DATA_FILE_NAME));
+  console.log("Part Two Example:", partTwo(DATA_FILE_NAME_EXAMPLE));
+  console.log("Part Two Example:", partTwo(DATA_FILE_NAME_EXAMPLE_PT2));
+  console.log("Part Two        :", partTwo(DATA_FILE_NAME));
 }
 
 function partOne(filename: string): number {
@@ -112,7 +114,11 @@ function parseFileToMoves(fileString: string): Move[] {
     });
 }
 
-// function partTwo(filename: string): {};
+function partTwo(filename: string): number {
+  const moves = parseFileToMoves(Deno.readTextFileSync(filename));
+
+  return 0;
+}
 
 Deno.test(function shouldPassPartOneExample() {
   assertEquals(partOne(DATA_FILE_NAME_EXAMPLE), 13);
@@ -122,10 +128,14 @@ Deno.test(function shouldPassPartOne() {
   assertEquals(partOne(DATA_FILE_NAME), 6023);
 });
 
-// Deno.test(function shouldPassPartTwoExample() {
-//   assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE), 8);
-// });
+Deno.test(function shouldPassPartTwoExample() {
+  assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE), 0);
+});
 
-// Deno.test(function shouldPassPartTwo() {
-//   assertEquals(partTwo(DATA_FILE_NAME), 211680);
-// });
+Deno.test(function shouldPassPartTwoExampleTwo() {
+  assertEquals(partTwo(DATA_FILE_NAME_EXAMPLE_PT2), 36);
+});
+
+Deno.test(function shouldPassPartTwo() {
+  assertEquals(partTwo(DATA_FILE_NAME), null);
+});
