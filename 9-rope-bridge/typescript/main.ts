@@ -26,24 +26,35 @@ function main(): void {
 
 function partOne(filename: string): number {
   const moves = parseFileToMoves(Deno.readTextFileSync(filename));
-
-  const headPosition = { x: 0, y: 0 };
-  let tailPosition = structuredClone(headPosition);
   const tailPositions = new Set<string>();
+  const rope = createRope(2);
+  const head = rope[0];
+
+  // _logBoard(rope);
 
   moves.forEach((move) => {
-    headPosition.x += move.x;
-    headPosition.y += move.y;
+    head.x += move.x;
+    head.y += move.y;
 
-    tailPosition = calculateHeadPosition(headPosition, tailPosition);
-    tailPositions.add(JSON.stringify(tailPosition));
+    rope.forEach((position, index) => {
+      if (position === head) return;
+
+      const prevPosition = rope[index - 1];
+      rope[index] = calculationPosition(prevPosition, position);
+
+      if (index === rope.length - 1) {
+        tailPositions.add(JSON.stringify(position));
+      }
+    });
+
+    // _logBoard(rope);
   });
 
   return tailPositions.size;
 }
 
 // For debugging
-function _logBoard(head: Position, tail: Position): void {
+function _logBoard(rope: Position[]): void {
   const board = [
     ["x", "x", "x", "x", "x", "x"],
     ["x", "x", "x", "x", "x", "x"],
@@ -53,13 +64,24 @@ function _logBoard(head: Position, tail: Position): void {
     ["x", "x", "x", "x", "x", "x"],
   ];
 
-  board[head.y][head.x] = "H";
-  board[tail.y][tail.x] = "T";
+  rope.forEach((position, index) => {
+    board[position.y][position.x] = index.toString();
+  });
 
   board.reverse();
+
+  console.clear();
+  console.log(board);
+  prompt("Press enter to continue");
 }
 
-function calculateHeadPosition(
+function createRope(length: number): Position[] {
+  return Array.from({ length }).map(() => {
+    return { x: 0, y: 0 };
+  });
+}
+
+function calculationPosition(
   headPosition: Position,
   tailPosition: Position
 ): Position {
