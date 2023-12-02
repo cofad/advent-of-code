@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.200.0/assert/mod.ts";
-import { partOne, partTwo } from "./day-one.ts";
+import { partOne, partTwo } from "./main.ts";
 
 const DATA_FILE_NAME = "./day-one/data.txt";
 const DATA_PART_ONE_EXAMPLE_FILE_NAME = "./day-one/data-part-one-example.txt";
