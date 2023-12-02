@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "day-one": "deno test --check=all --watch --allow-read=. day-one/day-one.test.ts"
+  }
+}
