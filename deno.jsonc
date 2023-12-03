@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "day-one": "deno test --check=all --watch --allow-read=. day-one/main.test.ts",
-    "day-two": "deno test --check=all --watch --allow-read=. day-two/main.test.ts"
+    "day-one": "cd day-one && deno test --check=all --watch --allow-read=. main.test.ts",
+    "day-two": "cd day-two && deno test --check=all --watch --allow-read=. main.test.ts"
   }
 }
