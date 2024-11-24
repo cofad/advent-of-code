@@ -1,0 +1,1 @@
+deno run --watch --allow-read day-3-pt-2.ts
