@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "run": "deno test --check=all --watch --allow-read=. main.test.ts"
+  }
+}
